@@ -26,7 +26,7 @@ const App: React.FC = () => {
       }
 
       // kirim API KEY ke service bila perlu
-      const result = await generateImageFromPrompt(prompt, aspectRatio);
+      const result = await generateImageFromPrompt(apiKey, prompt, aspectRatio);
       setImageUrl(result.imageUrl);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
