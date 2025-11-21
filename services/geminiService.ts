@@ -3,7 +3,7 @@ import { AspectRatio, GenerationResult } from '../types';
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-// Initialize Gemini client using Vite env
+// INISIALISASI CLIENT
 const ai = new GoogleGenAI({ apiKey });
 
 export const generateImageFromPrompt = async (
@@ -12,41 +12,37 @@ export const generateImageFromPrompt = async (
 ): Promise<GenerationResult> => {
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: {
-        parts: [
-          { text: prompt }
-        ],
-      },
-      config: {
-        imageConfig: {
-          aspectRatio: aspectRatio,
-        },
-      },
+      model: "gemini-2.0-flash-image",
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }]
+        }
+      ],
+      generationConfig: {
+        responseModalities: ["image"],
+        image: {
+          aspectRatio
+        }
+      }
     });
 
     let imageUrl: string | null = null;
     let textMetadata = '';
 
-    if (response.candidates && response.candidates.length > 0) {
-      const content = response.candidates[0].content;
+    const parts = response?.candidates?.[0]?.content?.parts || [];
 
-      if (content && content.parts) {
-        for (const part of content.parts) {
-          if (part.inlineData) {
-            const base64EncodeString = part.inlineData.data;
-            const mimeType = part.inlineData.mimeType || 'image/png';
-            imageUrl = `data:${mimeType};base64,${base64EncodeString}`;
-          } else if (part.text) {
-            textMetadata += part.text;
-          }
-        }
+    for (const part of parts) {
+      if (part.inlineData) {
+        const base64 = part.inlineData.data;
+        const mime = part.inlineData.mimeType || "image/png";
+        imageUrl = `data:${mime};base64,${base64}`;
+      } else if (part.text) {
+        textMetadata += part.text;
       }
     }
 
-    if (!imageUrl) {
-      throw new Error("No image data found in the response.");
-    }
+    if (!imageUrl) throw new Error("Image data not found");
 
     return { imageUrl, textMetadata };
 
