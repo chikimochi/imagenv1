@@ -18,15 +18,15 @@ export const generateImageFromPrompt = async (
           parts: [{ text: prompt }]
         }
       ],
-      responseModalities: ["image"],
+      responseModalities: ["image"],   // ✔ FORMAT BENAR
       image: {
-        aspectRatio
+        aspectRatio                    // ✔ FORMAT BENAR
       }
     });
 
     const parts = response?.candidates?.[0]?.content?.parts || [];
 
-    let imageUrl = null;
+    let imageUrl: string | null = null;
     let textMetadata = "";
 
     for (const part of parts) {
