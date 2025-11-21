@@ -11,7 +11,7 @@ export const generateImageFromPrompt = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-image",
+      model: "models/gemini-2.0-flash-image", // lebih aman di semua region
       contents: [
         {
           role: "user",
@@ -24,12 +24,13 @@ export const generateImageFromPrompt = async (
       }
     });
 
-    const parts = response?.candidates?.[0]?.content?.parts || [];
-    let imageUrl = null;
+    const parts = response?.candidates?.[0]?.content?.parts ?? [];
+    
+    let imageUrl: string | null = null;
     let textMetadata = "";
 
     for (const part of parts) {
-      if (part.inlineData) {
+      if (part.inlineData?.data) {
         const base64 = part.inlineData.data;
         const mime = part.inlineData.mimeType || "image/png";
         imageUrl = `data:${mime};base64,${base64}`;
@@ -38,12 +39,20 @@ export const generateImageFromPrompt = async (
       }
     }
 
-    if (!imageUrl) throw new Error("Image generation failed");
+    if (!imageUrl) {
+      throw new Error("Image generation failed: No image returned.");
+    }
 
     return { imageUrl, textMetadata };
 
   } catch (err: any) {
     console.error("Gemini API Error:", err);
-    throw new Error(err.message || "Failed to generate image");
+
+    const msg =
+      err?.response?.error?.message ||
+      err?.message ||
+      "Failed to generate image";
+
+    throw new Error(msg);
   }
 };
