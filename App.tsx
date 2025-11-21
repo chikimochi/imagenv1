@@ -16,15 +16,16 @@ const App: React.FC = () => {
   const handleGenerate = async () => {
     setError(null);
     setIsLoading(true);
-    
-    // Optional: Clear previous image while generating new one
-    // setImageUrl(null); 
+
+    // ambil API KEY dari Vite
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
     try {
-      if (!process.env.API_KEY) {
-        throw new Error("API Key is missing. Please check your environment configuration.");
+      if (!apiKey) {
+        throw new Error("API Key is missing. Please set VITE_GEMINI_API_KEY in Vercel environment.");
       }
-      
+
+      // kirim API KEY ke service bila perlu
       const result = await generateImageFromPrompt(prompt, aspectRatio);
       setImageUrl(result.imageUrl);
     } catch (err: any) {
@@ -37,18 +38,16 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-dark-900 text-slate-100 selection:bg-brand-500/30">
       <Header />
-      
+
       <main className="flex-grow px-4 py-8 md:py-12">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-          
-          {/* Input Section */}
           <div className="lg:col-span-2 flex flex-col gap-8 order-2 lg:order-1">
             <div>
               <h2 className="text-2xl font-bold mb-2 text-white">Create with AI</h2>
               <p className="text-slate-400 mb-6">
                 Transform text into stunning visuals using the power of Gemini Flash.
               </p>
-              
+
               <InputForm
                 prompt={prompt}
                 setPrompt={setPrompt}
@@ -65,7 +64,7 @@ const App: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="bg-dark-800/50 p-6 rounded-xl border border-dark-700">
               <h3 className="text-sm font-semibold text-slate-300 mb-2">Tips for better results:</h3>
               <ul className="text-sm text-slate-400 space-y-2 list-disc list-inside">
@@ -76,13 +75,12 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Preview Section */}
           <div className="lg:col-span-3 order-1 lg:order-2 h-full">
-             <div className="sticky top-24">
-               <div className="aspect-square lg:aspect-auto lg:h-[600px] w-full">
-                 <ImageDisplay imageUrl={imageUrl} isLoading={isLoading} />
-               </div>
-             </div>
+            <div className="sticky top-24">
+              <div className="aspect-square lg:aspect-auto lg:h-[600px] w-full">
+                <ImageDisplay imageUrl={imageUrl} isLoading={isLoading} />
+              </div>
+            </div>
           </div>
 
         </div>
