@@ -14,6 +14,7 @@ export interface GenerateImageParams {
 export interface GenerationResult {
   imageUrl: string | null;
   textMetadata?: string;
+  metadata?: any; // optional
 }
 
 export interface AppError {
