@@ -1,15 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 import { AspectRatio, GenerationResult } from '../types';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
-// INISIALISASI CLIENT
-const ai = new GoogleGenAI({ apiKey });
-
 export const generateImageFromPrompt = async (
+  apiKey: string,
   prompt: string,
   aspectRatio: AspectRatio
 ): Promise<GenerationResult> => {
+
+  const ai = new GoogleGenAI({ apiKey });
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-image",
@@ -21,16 +20,13 @@ export const generateImageFromPrompt = async (
       ],
       generationConfig: {
         responseModalities: ["image"],
-        image: {
-          aspectRatio
-        }
+        image: { aspectRatio }
       }
     });
 
-    let imageUrl: string | null = null;
-    let textMetadata = '';
-
     const parts = response?.candidates?.[0]?.content?.parts || [];
+    let imageUrl = null;
+    let textMetadata = "";
 
     for (const part of parts) {
       if (part.inlineData) {
@@ -42,12 +38,12 @@ export const generateImageFromPrompt = async (
       }
     }
 
-    if (!imageUrl) throw new Error("Image data not found");
+    if (!imageUrl) throw new Error("Image generation failed");
 
     return { imageUrl, textMetadata };
 
-  } catch (error: any) {
-    console.error("Gemini API Error:", error);
-    throw new Error(error.message || "Failed to generate image");
+  } catch (err: any) {
+    console.error("Gemini API Error:", err);
+    throw new Error(err.message || "Failed to generate image");
   }
 };
