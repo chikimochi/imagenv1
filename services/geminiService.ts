@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { AspectRatio, GenerationResult } from '../types';
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 // Initialize the client with the API Key from environment variables
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
