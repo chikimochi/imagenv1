@@ -18,11 +18,9 @@ export const generateImageFromPrompt = async (
           parts: [{ text: prompt }]
         }
       ],
-      generationConfig: {
-        response_modalities: ["image"],
-        image: {
-          aspectRatio
-        }
+      responseModalities: ["image"],
+      image: {
+        aspectRatio
       }
     });
 
