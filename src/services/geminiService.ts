@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { AspectRatio, GenerationResult } from '../types';
+import { AspectRatio, GenerationResult } from "../types";
 
 export const generateImageFromPrompt = async (
   apiKey: string,
@@ -11,7 +11,7 @@ export const generateImageFromPrompt = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash", // lebih aman di semua region
+      model: "gemini-2.5-flash",
       contents: [
         {
           role: "user",
@@ -19,18 +19,20 @@ export const generateImageFromPrompt = async (
         }
       ],
       generationConfig: {
-        responseModalities: ["image"],
-        image: { aspectRatio }
+        response_modalities: ["image"],
+        image: {
+          aspectRatio
+        }
       }
     });
 
-    const parts = response?.candidates?.[0]?.content?.parts ?? [];
-    
-    let imageUrl: string | null = null;
+    const parts = response?.candidates?.[0]?.content?.parts || [];
+
+    let imageUrl = null;
     let textMetadata = "";
 
     for (const part of parts) {
-      if (part.inlineData?.data) {
+      if (part.inlineData) {
         const base64 = part.inlineData.data;
         const mime = part.inlineData.mimeType || "image/png";
         imageUrl = `data:${mime};base64,${base64}`;
@@ -40,19 +42,13 @@ export const generateImageFromPrompt = async (
     }
 
     if (!imageUrl) {
-      throw new Error("Image generation failed: No image returned.");
+      throw new Error("No image was returned by Gemini.");
     }
 
     return { imageUrl, textMetadata };
 
   } catch (err: any) {
     console.error("Gemini API Error:", err);
-
-    const msg =
-      err?.response?.error?.message ||
-      err?.message ||
-      "Failed to generate image";
-
-    throw new Error(msg);
+    throw new Error(err.message || "Failed to generate image");
   }
 };
