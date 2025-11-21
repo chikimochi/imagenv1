@@ -15,9 +15,15 @@ const App: React.FC = () => {
 
   const handleGenerate = async () => {
     setError(null);
-    setIsLoading(true);
+    
+    if (!prompt.trim()) {
+      setError("Prompt cannot be empty.");
+      return;
+    }
 
-    // ambil API KEY dari Vite
+    setIsLoading(true);
+    setImageUrl(null);
+
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
     try {
@@ -25,11 +31,16 @@ const App: React.FC = () => {
         throw new Error("API Key is missing. Please set VITE_GEMINI_API_KEY in Vercel environment.");
       }
 
-      // kirim API KEY ke service bila perlu
       const result = await generateImageFromPrompt(apiKey, prompt, aspectRatio);
       setImageUrl(result.imageUrl);
+
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+      const msg =
+        err?.response?.error?.message ||
+        err?.message ||
+        "An unexpected error occurred.";
+      setError(msg);
+
     } finally {
       setIsLoading(false);
     }
@@ -41,6 +52,8 @@ const App: React.FC = () => {
 
       <main className="flex-grow px-4 py-8 md:py-12">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+          
+          {/* LEFT SECTION */}
           <div className="lg:col-span-2 flex flex-col gap-8 order-2 lg:order-1">
             <div>
               <h2 className="text-2xl font-bold mb-2 text-white">Create with AI</h2>
@@ -75,6 +88,7 @@ const App: React.FC = () => {
             </div>
           </div>
 
+          {/* RIGHT SECTION */}
           <div className="lg:col-span-3 order-1 lg:order-2 h-full">
             <div className="sticky top-24">
               <div className="aspect-square lg:aspect-auto lg:h-[600px] w-full">
