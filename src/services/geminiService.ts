@@ -11,7 +11,7 @@ export const generateImageFromPrompt = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "models/gemini-2.0-flash-image", // lebih aman di semua region
+      model: "models/gemini-2.5-flash-image", // lebih aman di semua region
       contents: [
         {
           role: "user",
