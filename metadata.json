@@ -1,0 +1,5 @@
+{
+  "name": "GeminiFlash ImageGen",
+  "description": "A serverless React application generating images using Google Gemini 2.5 Flash Image model via the @google/genai SDK.",
+  "requestFramePermissions": []
+}
